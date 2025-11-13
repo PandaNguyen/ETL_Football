@@ -1,86 +1,81 @@
-import numpy as np
-from time import sleep
-import random
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
 from selenium.webdriver.common.by import By
+from tqdm import tqdm
 import pandas as pd
+import time
+import os
 
-# ========================
-# 1️⃣ Cấu hình Chrome
-# ========================
-chrome_options = Options()
-chrome_options.add_argument("--headless=new")      # chạy ẩn, bỏ dòng này nếu muốn thấy trình duyệt
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
+# --- 1. Cấu hình Chrome headless ---
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+driver = webdriver.Chrome(options=options)
 
-# Tự động tải ChromeDriver phù hợp với bản Chrome hiện có
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
+# --- 2. Danh sách 5 mùa gần nhất ---
+seasons = ["2024-2025", "2023-2024", "2022-2023", "2021-2022", "2020-2021"]
 
-# ========================
-# 2️⃣ Mở trang web
-# ========================
-url = "https://www.flashscore.com/football/england/premier-league/standings/#/OEEq9Yvp/standings/overall/"
-driver.get(url)
-sleep(random.randint(5, 10))
+# --- 3. Tạo list để lưu kết quả ---
+all_data = []
 
-# GET header 
-headers = driver.find_elements(By.CSS_SELECTOR, "div.ui-table__headerCell") 
-titles = [h.get_attribute("title").strip() for h in headers if h.get_attribute("title")] 
-print(titles)
+# --- 4. Duyệt qua từng mùa ---
+for season in tqdm(seasons, desc="Crawling seasons", unit="season"):
+    base_url = f"https://www.flashfootball.com/england/premier-league-{season}/#/lAkHuyP3/standings/"
 
-#GET DATA
-data={}
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+    # --- 5. Duyệt qua 3 loại bảng ---
+    categories = ["overall", "home", "away"]
+    for cat in tqdm(categories, desc=f"{season}", leave=False, unit="table"):
+        url = f"{base_url}{cat}/"
+        driver.get(url)
+        time.sleep(2.5)
 
-# Chờ phần tử rank xuất hiện
-WebDriverWait(driver, 15).until(
-    EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.table__cell--rank"))
-)
+        # --- Lấy mùa giải hiển thị trên trang ---
+        try:
+            season_label = driver.find_element(By.CSS_SELECTOR, "div.heading__info").text.strip()
+        except:
+            season_label = season
 
-# Lấy dữ liệu
+        # --- Lấy dữ liệu ---
+        ranks = [r.text.strip() for r in driver.find_elements(By.CSS_SELECTOR, "div.tableCellRank")]
+        teams = [t.text.strip() for t in driver.find_elements(By.CSS_SELECTOR, "a.tableCellParticipant__name")]
+        values = [v.text.strip() for v in driver.find_elements(By.CSS_SELECTOR, "span.table__cell.table__cell--value")]
 
-ranks = driver.find_elements(By.CSS_SELECTOR, "div.table__cell--rank")
-data['Rank'] = [rank.text.strip() for rank in ranks if rank.text.strip()]
-print(data['Rank'])
+        # --- Lấy form gần đây ---
+        forms_all = driver.find_elements(By.CSS_SELECTOR, "div.table__cell.table__cell--form")
+        recent_forms = []
+        for form_cell in forms_all:
+            results = [s.text.strip() for s in form_cell.find_elements(By.CSS_SELECTOR, "span.wcl-scores-simple-text-01_8lVyp")]
+            recent_forms.append("".join(results))
 
+        # --- Chia giá trị theo hàng ---
+        rows = [values[i:i + 7] for i in range(0, len(values), 7)]
 
-teams = driver.find_elements(By.CSS_SELECTOR, "a.tableCellParticipant__name")
-data['Team'] = [t.text.strip() for t in teams if t.text.strip()]
-print(data["Team"])
+        # --- Gộp dữ liệu ---
+        for i, row in enumerate(rows):
+            all_data.append({
+                "Mùa giải": season_label,
+                "Match_Category": cat,
+                "Rank": ranks[i] if i < len(ranks) else "",
+                "Team": teams[i] if i < len(teams) else "",
+                "MP": row[0] if len(row) > 0 else "",
+                "W": row[1] if len(row) > 1 else "",
+                "D": row[2] if len(row) > 2 else "",
+                "L": row[3] if len(row) > 3 else "",
+                "GF:GA": row[4] if len(row) > 4 else "",
+                "GD": row[5] if len(row) > 5 else "",
+                "Pts": row[6] if len(row) > 6 else "",
+                "Recent_Form": recent_forms[i] if i < len(recent_forms) else ""
+            })
 
-# Matches Played (MP)
-data['MP'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--value:nth-of-type(1)")]
+# --- 6. Lưu ra CSV ---
+# Giả sử bạn đang chạy file Python trong thư mục project gốc
+# và đã có sẵn thư mục con "data"
+file_path = os.path.join("data", "premier_league_last_5_seasons.csv")
 
-# Wins
-data['WINS'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--value:nth-of-type(2)")]
+columns = ["Mùa giải", "Match_Category", "Rank", "Team", "MP", "W", "D", "L", "GF:GA", "GD", "Pts", "Recent_Form"]
+df = pd.DataFrame(all_data, columns=columns)
+df.to_csv(file_path, index=False, encoding="utf-8-sig")
 
-# Draws
-data['DRAWS'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--value:nth-of-type(3)")]
-
-# Losses
-data['LOSSES'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--value:nth-of-type(4)")]
-
-# Goals For : Goals Against (VD: "86:41")
-data['GOALS'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--score")]
-
-# Goal Difference
-data['GD'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--goalsForAgainstDiff")]
-
-# Points
-data['POINTS'] = [e.text.strip() for e in driver.find_elements(By.CSS_SELECTOR, "span.table__cell--points")]
-
-data['Mùa giải'] = driver.find_element(By.CSS_SELECTOR, "div.heading__info").text.strip()
-
-# Lấy tất cả thẻ <a> chứa link standings
-categories = driver.find_elements(By.CSS_SELECTOR, 'a[href*="standings/"]')
-
-# Trích xuất phần cuối của href (overall, home, away)
-data['match_category'] = [cat.get_attribute('href').split('/')[-2] for cat in categories]
-
-print(data['match_category'])
+driver.quit()
+print(f"File đã được lưu tại: {file_path}")
