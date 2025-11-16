@@ -24,8 +24,9 @@ DATA_RAW_DIR = os.path.join(BASE_DIR, "data_raw")
 # Tạo thư mục nếu chưa tồn tại
 os.makedirs(DATA_RAW_DIR, exist_ok=True)
 
-def scrape_team_points():
-    print("from flashscore.com...")
+def scrape_team_points(seasons_to_scrape=None):
+  
+    print("Scraping team points from flashscore.com...")
  
     chrome_options = Options()
     chrome_options.add_argument("--headless=new")
@@ -45,7 +46,29 @@ def scrape_team_points():
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     try:
-        seasons = ["2024-2025", "2023-2024", "2022-2023", "2021-2022", "2020-2021"]
+        # Xác định mùa giải cần scrape
+        if seasons_to_scrape is None:
+            # Kiểm tra xem có dữ liệu cũ không
+            LAST_EXTRACT_DATE_FILE = os.path.join(DATA_RAW_DIR, ".last_extract_date.txt")
+            has_existing_data = False
+            if os.path.exists(LAST_EXTRACT_DATE_FILE):
+                try:
+                    with open(LAST_EXTRACT_DATE_FILE, 'r') as f:
+                        if f.read().strip():
+                            has_existing_data = True
+                except:
+                    pass
+            
+            if has_existing_data:
+                seasons = ["2025-2026"]  # Chỉ mùa mới từ 2025-26 trở đi
+                print(f"Scraping NEW season: {seasons}")
+            else:
+                seasons = ["2024-2025", "2023-2024", "2022-2023", "2021-2022", "2020-2021"]
+                print(f"First time scraping ALL seasons: {seasons}")
+        else:
+            seasons = seasons_to_scrape
+            print(f"Scraping specified seasons: {seasons}")
+        
         all_data = []
         for season in seasons:
             print(f"Processing season: {season}")
@@ -56,7 +79,19 @@ def scrape_team_points():
             for cat in categories:
                 url = f"{base_url}{cat}/"
                 driver.get(url)
-                sleep(2.5)
+                
+                # Tăng wait time và thêm explicit wait cho table
+                print(f"  Loading {cat} standings...")
+                sleep(4)  # Tăng từ 2.5 lên 4 giây
+                
+                # Wait cho table load xong
+                try:
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "div.tableCellRank"))
+                    )
+                    sleep(1)  # Thêm 1 giây nữa để chắc chắn
+                except:
+                    print(f"  Warning: Table not fully loaded for {cat}")
                 
                 # Lấy mùa giải hiển thị trên trang
                 try:
@@ -72,10 +107,17 @@ def scrape_team_points():
                 recent_forms = []
                 for form_cell in forms_all:
                     results = [s.text.strip() for s in form_cell.find_elements(By.CSS_SELECTOR, "span.wcl-scores-simple-text-01_8lVyp")]
-                    recent_forms.append("".join(results))
+                    form_str = "".join(results)
+                    # Clean dấu "?" và các ký tự đặc biệt khác
+                    form_str = form_str.replace("?", "").strip()
+                    recent_forms.append(form_str)
                 
                 # Chia giá trị theo hàng (mỗi hàng có 7 giá trị: MP, W, D, L, GF:GA, GD, Pts)
                 rows = [values[i:i + 7] for i in range(0, len(values), 7)]
+                
+                # Verify data quality - log first team để check
+                if len(teams) > 0 and len(rows) > 0:
+                    print(f"  {cat.upper()}: {teams[0]} - MP:{rows[0][0]} W:{rows[0][1]} GF:GA:{rows[0][4]} Form:{recent_forms[0] if recent_forms else 'N/A'}")
                 
                 for i, row in enumerate(rows):
                     all_data.append({
@@ -98,9 +140,16 @@ def scrape_team_points():
         
         out_path = Path(DATA_RAW_DIR) / "team_point.csv"
         out_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Merge với dữ liệu cũ nếu có
+        team_points_df = merge_with_existing_raw_data(
+            team_points_df,
+            out_path,
+            ["Mùa giải", "Match_Category", "Team"]  # Key columns
+        )
+        
         team_points_df.to_csv(out_path, index=False, encoding="utf-8-sig")
-        print(f"Saved: {out_path}")
-        print(f"Total records: {len(team_points_df)}")
+        print(f"Saved: {out_path} ({len(team_points_df)} records)")
         
     except Exception as e:
         print(f"Error scraping: {e}")
@@ -108,73 +157,203 @@ def scrape_team_points():
     finally:
         driver.quit()
 
-def main():
+def get_seasons_to_extract():
+    """
+    - Nếu chưa có dữ liệu: extract tất cả từ 2021 (5 mùa)
+    - Nếu đã có dữ liệu: chỉ extract mùa mới từ 2526 trở đi
+    """
+    LAST_EXTRACT_DATE_FILE = os.path.join(DATA_RAW_DIR, ".last_extract_date.txt")
+    
+    # Kiểm tra xem đã có dữ liệu chưa
+    has_existing_data = False
+    if os.path.exists(LAST_EXTRACT_DATE_FILE):
+        try:
+            with open(LAST_EXTRACT_DATE_FILE, 'r') as f:
+                date_str = f.read().strip()
+                if date_str:
+                    has_existing_data = True
+                    print(f"Last extract date found: {date_str}")
+        except:
+            pass
+    
+    if has_existing_data:
+        # Chỉ cào mùa giải mới từ 2526 trở đi (đã có mùa trước rồi)
+        print("Extracting NEW seasons only (from 2025-26 onwards)...")
+        return ['2526'] 
+    else:
+        # cào 5 mùa
+        print("First time extraction: extracting ALL seasons (2020-21 to 2024-25)...")
+        return ['2021', '2122', '2223', '2324', '2425']
 
+
+def save_last_extract_date():
+    "Lưu ngày extract cuối cùng"
+    from datetime import datetime
+    LAST_EXTRACT_DATE_FILE = os.path.join(DATA_RAW_DIR, ".last_extract_date.txt")
+    
+    today = datetime.now().date().strftime('%Y-%m-%d')
+    with open(LAST_EXTRACT_DATE_FILE, 'w') as f:
+        f.write(today)
+    print(f"Saved: {today}")
+
+
+def merge_with_existing_raw_data(new_df, file_path, key_cols):
+    """
+    Merge dữ liệu mới với dữ liệu cũ trong file raw (incremental extract).
+    - Nếu file cũ không tồn tại: trả về new_df
+    - Nếu file cũ tồn tại: merge và loại bỏ duplicates dựa trên key_cols
+    
+    Args:
+        new_df: DataFrame chứa dữ liệu mới
+        file_path: Đường dẫn tới file raw
+        key_cols: List các cột dùng để identify duplicates
+    
+    Returns:
+        DataFrame đã merge
+    """
+    if not os.path.exists(file_path):
+        print(f"  First time: No existing data to merge")
+        return new_df
+    
+    try:
+        # Đọc dữ liệu cũ
+        old_df = pd.read_csv(file_path)
+        if old_df.empty:
+            print(f"  Existing file is empty, using new data only")
+            return new_df
+        
+        # Kiểm tra columns có khớp không
+        if set(old_df.columns) != set(new_df.columns):
+            print(f"  Warning: Columns mismatch, using new data only")
+            return new_df
+        
+        # Merge: loại bỏ records cũ có cùng key với records mới
+        if key_cols and all(col in old_df.columns for col in key_cols):
+            # Lấy keys của dữ liệu mới
+            new_keys = set(new_df[key_cols].apply(tuple, axis=1))
+            # Lọc dữ liệu cũ: loại bỏ những records có key trùng với dữ liệu mới
+            old_df_filtered = old_df[~old_df[key_cols].apply(tuple, axis=1).isin(new_keys)]
+            # Merge: dữ liệu cũ (đã filter) + dữ liệu mới
+            combined = pd.concat([old_df_filtered, new_df], ignore_index=True)
+            print(f"  Merged: {len(old_df)} old - {len(old_df) - len(old_df_filtered)} duplicates + {len(new_df)} new = {len(combined)} total")
+            return combined
+        else:
+            # Nếu không có key_cols, chỉ append và drop_duplicates
+            combined = pd.concat([old_df, new_df], ignore_index=True)
+            combined = combined.drop_duplicates(keep='last')
+            print(f"  Merged: {len(old_df)} old + {len(new_df)} new = {len(combined)} total (after dedup)")
+            return combined
+    except Exception as e:
+        print(f"  Warning: Could not merge with existing data: {e}")
+        print(f"  Using new data only")
+        return new_df
+
+
+def main():
+    # Apply bypass headers globally
+    try:
+        from bypass_headers import apply_bypass
+        apply_bypass()
+    except ImportError:
+        print("[WARN] bypass_headers not found, using default requests")
+    
+    # Xác định mùa giải cần extract
+    seasons_to_extract = get_seasons_to_extract()
+    print(f"Seasons to extract: {seasons_to_extract}")
+    
+    # Create FBref instance
     fbref = sd.FBref(
         leagues="ENG-Premier League",
-        seasons=['2021', '2122', '2223', '2324', '2425']
+        seasons=seasons_to_extract
     )
     
+    # ===== PLAYER SEASON STATS =====
+    print("\n1. Fetching player season statistics...")
     player_season = fbref.read_player_season_stats()
-
     player_season_df = pd.DataFrame(player_season)
     player_season_df = player_season_df.reset_index()
     
     out_path = Path(DATA_RAW_DIR) / "fbref_fact_player_season_stats.csv"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Merge với dữ liệu cũ nếu có
+    player_season_df = merge_with_existing_raw_data(
+        player_season_df, 
+        out_path, 
+        ['season', 'player', 'team']  # Key columns để identify duplicates
+    )
+    
     player_season_df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"Saved: {out_path}")
+    print(f"Saved: {out_path} ({len(player_season_df)} records)")
     
 
-    print("Fetching player match statistics...")
+    print("\n2. Fetching player match statistics...")
     player_match = fbref.read_player_match_stats()
     player_match_df = pd.DataFrame(player_match)
-
     player_match_df = player_match_df.reset_index()
     
     out_path = Path(DATA_RAW_DIR) / "fbref_fact_player_match_stats.csv"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Merge với dữ liệu cũ nếu có
+    player_match_df = merge_with_existing_raw_data(
+        player_match_df,
+        out_path,
+        ['season', 'game', 'player', 'team']  # Key columns
+    )
+    
     player_match_df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"Saved: {out_path}")
+    print(f"Saved: {out_path} ({len(player_match_df)} records)")
 
-    print("Fetching team match statistics...")
+    # ===== TEAM MATCH STATS =====
+    print("\n3. Fetching team match statistics...")
     team_match = fbref.read_team_match_stats()
     team_match_df = pd.DataFrame(team_match)
     team_match_df = team_match_df.reset_index()
     
     out_path = Path(DATA_RAW_DIR) / "fbref_fact_team_match.csv"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Merge với dữ liệu cũ nếu có
+    team_match_df = merge_with_existing_raw_data(
+        team_match_df,
+        out_path,
+        ['season', 'game', 'team']  # Key columns
+    )
+    
     team_match_df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"Saved: {out_path}")
+    print(f"Saved: {out_path} ({len(team_match_df)} records)")
     
 
-    print("Fetching team season statistics...")
+    # ===== TEAM SEASON STATS =====
+    print("\n4. Fetching team season statistics...")
     team_season = fbref.read_team_season_stats()
     team_season_df = pd.DataFrame(team_season)
     team_season_df = team_season_df.reset_index()
     
     out_path = Path(DATA_RAW_DIR) / "fbref_fact_team_season.csv"
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Merge với dữ liệu cũ nếu có
+    team_season_df = merge_with_existing_raw_data(
+        team_season_df,
+        out_path,
+        ['season', 'team']  # Key columns
+    )
+    
     team_season_df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"Saved: {out_path}")
+    print(f"Saved: {out_path} ({len(team_season_df)} records)")
     
 
-    print("Fetching Understat shot events...")
-    understat = sd.Understat(
-        leagues="ENG-Premier League",
-        seasons=['2021','2122','2223','2324','2425']
-    )
-    shot = understat.read_shot_events()
-    shot_df = pd.DataFrame(shot)
     
-    out_path = Path(DATA_RAW_DIR) / "understat_fact_shot.csv"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    shot_df.to_csv(out_path, index=False, encoding="utf-8")
-    print(f"Saved: {out_path}")
-    
+    print("\n6. Scraping team points from Flashscore...")
     scrape_team_points()
     
-    print("successfully")
+    # Lưu ngày extract cuối cùng
+    save_last_extract_date()
+    
+    print("Extract completed")
+
 
 
 if __name__ == "__main__":

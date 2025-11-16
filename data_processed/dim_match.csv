@@ -1899,3 +1899,383 @@ game_id,game,date,round,day
 1898,2025-05-04 West Ham-Tottenham,2025-05-04,Matchweek 35,Sun
 1899,2024-12-09 West Ham-Wolves,2024-12-09,Matchweek 15,Mon
 1900,2025-04-01 Wolves-West Ham,2025-04-01,Matchweek 30,Tue
+1901,2025-08-17 Manchester Utd-Arsenal,2025-08-17,Matchweek 1,Sun
+1902,2025-08-23 Arsenal-Leeds United,2025-08-23,Matchweek 2,Sat
+1903,2025-08-31 Liverpool-Arsenal,2025-08-31,Matchweek 3,Sun
+1904,2025-09-13 Arsenal-Nott'ham Forest,2025-09-13,Matchweek 4,Sat
+1905,2025-09-21 Arsenal-Manchester City,2025-09-21,Matchweek 5,Sun
+1906,2025-09-28 Newcastle Utd-Arsenal,2025-09-28,Matchweek 6,Sun
+1907,2025-10-04 Arsenal-West Ham,2025-10-04,Matchweek 7,Sat
+1908,2025-10-18 Fulham-Arsenal,2025-10-18,Matchweek 8,Sat
+1909,2025-10-26 Arsenal-Crystal Palace,2025-10-26,Matchweek 9,Sun
+1910,2025-11-01 Burnley-Arsenal,2025-11-01,Matchweek 10,Sat
+1911,2025-11-08 Sunderland-Arsenal,2025-11-08,Matchweek 11,Sat
+1912,2025-11-23 Arsenal-Tottenham,2025-11-23,Matchweek 12,Sun
+1913,2025-11-30 Chelsea-Arsenal,2025-11-30,Matchweek 13,Sun
+1914,2025-12-03 Arsenal-Brentford,2025-12-03,Matchweek 14,Wed
+1915,2025-12-06 Aston Villa-Arsenal,2025-12-06,Matchweek 15,Sat
+1916,2025-12-13 Arsenal-Wolves,2025-12-13,Matchweek 16,Sat
+1917,2025-12-20 Everton-Arsenal,2025-12-20,Matchweek 17,Sat
+1918,2025-12-27 Arsenal-Brighton,2025-12-27,Matchweek 18,Sat
+1919,2025-12-30 Arsenal-Aston Villa,2025-12-30,Matchweek 19,Tue
+1920,2026-01-03 Bournemouth-Arsenal,2026-01-03,Matchweek 20,Sat
+1921,2026-01-08 Arsenal-Liverpool,2026-01-08,Matchweek 21,Thu
+1922,2026-01-17 Nott'ham Forest-Arsenal,2026-01-17,Matchweek 22,Sat
+1923,2026-01-24 Arsenal-Manchester Utd,2026-01-24,Matchweek 23,Sat
+1924,2026-01-31 Leeds United-Arsenal,2026-01-31,Matchweek 24,Sat
+1925,2026-02-07 Arsenal-Sunderland,2026-02-07,Matchweek 25,Sat
+1926,2026-02-11 Brentford-Arsenal,2026-02-11,Matchweek 26,Wed
+1927,2026-02-21 Tottenham-Arsenal,2026-02-21,Matchweek 27,Sat
+1928,2026-02-28 Arsenal-Chelsea,2026-02-28,Matchweek 28,Sat
+1929,2026-03-04 Brighton-Arsenal,2026-03-04,Matchweek 29,Wed
+1930,2026-03-14 Arsenal-Everton,2026-03-14,Matchweek 30,Sat
+1931,2026-03-21 Wolves-Arsenal,2026-03-21,Matchweek 31,Sat
+1932,2026-04-11 Arsenal-Bournemouth,2026-04-11,Matchweek 32,Sat
+1933,2026-04-18 Manchester City-Arsenal,2026-04-18,Matchweek 33,Sat
+1934,2026-04-25 Arsenal-Newcastle Utd,2026-04-25,Matchweek 34,Sat
+1935,2026-05-02 Arsenal-Fulham,2026-05-02,Matchweek 35,Sat
+1936,2026-05-09 West Ham-Arsenal,2026-05-09,Matchweek 36,Sat
+1937,2026-05-17 Arsenal-Burnley,2026-05-17,Matchweek 37,Sun
+1938,2026-05-24 Crystal Palace-Arsenal,2026-05-24,Matchweek 38,Sun
+1939,2025-08-16 Aston Villa-Newcastle Utd,2025-08-16,Matchweek 1,Sat
+1940,2025-08-23 Brentford-Aston Villa,2025-08-23,Matchweek 2,Sat
+1941,2025-08-31 Aston Villa-Crystal Palace,2025-08-31,Matchweek 3,Sun
+1942,2025-09-13 Everton-Aston Villa,2025-09-13,Matchweek 4,Sat
+1943,2025-09-21 Sunderland-Aston Villa,2025-09-21,Matchweek 5,Sun
+1944,2025-09-28 Aston Villa-Fulham,2025-09-28,Matchweek 6,Sun
+1945,2025-10-05 Aston Villa-Burnley,2025-10-05,Matchweek 7,Sun
+1946,2025-10-19 Tottenham-Aston Villa,2025-10-19,Matchweek 8,Sun
+1947,2025-10-26 Aston Villa-Manchester City,2025-10-26,Matchweek 9,Sun
+1948,2025-11-01 Liverpool-Aston Villa,2025-11-01,Matchweek 10,Sat
+1949,2025-11-09 Aston Villa-Bournemouth,2025-11-09,Matchweek 11,Sun
+1950,2025-11-23 Leeds United-Aston Villa,2025-11-23,Matchweek 12,Sun
+1951,2025-11-30 Aston Villa-Wolves,2025-11-30,Matchweek 13,Sun
+1952,2025-12-03 Brighton-Aston Villa,2025-12-03,Matchweek 14,Wed
+1953,2025-12-14 West Ham-Aston Villa,2025-12-14,Matchweek 16,Sun
+1954,2025-12-21 Aston Villa-Manchester Utd,2025-12-21,Matchweek 17,Sun
+1955,2025-12-27 Chelsea-Aston Villa,2025-12-27,Matchweek 18,Sat
+1956,2026-01-03 Aston Villa-Nott'ham Forest,2026-01-03,Matchweek 20,Sat
+1957,2026-01-07 Crystal Palace-Aston Villa,2026-01-07,Matchweek 21,Wed
+1958,2026-01-17 Aston Villa-Everton,2026-01-17,Matchweek 22,Sat
+1959,2026-01-24 Newcastle Utd-Aston Villa,2026-01-24,Matchweek 23,Sat
+1960,2026-01-31 Aston Villa-Brentford,2026-01-31,Matchweek 24,Sat
+1961,2026-02-07 Bournemouth-Aston Villa,2026-02-07,Matchweek 25,Sat
+1962,2026-02-11 Aston Villa-Brighton,2026-02-11,Matchweek 26,Wed
+1963,2026-02-21 Aston Villa-Leeds United,2026-02-21,Matchweek 27,Sat
+1964,2026-02-28 Wolves-Aston Villa,2026-02-28,Matchweek 28,Sat
+1965,2026-03-04 Aston Villa-Chelsea,2026-03-04,Matchweek 29,Wed
+1966,2026-03-14 Manchester Utd-Aston Villa,2026-03-14,Matchweek 30,Sat
+1967,2026-03-21 Aston Villa-West Ham,2026-03-21,Matchweek 31,Sat
+1968,2026-04-11 Nott'ham Forest-Aston Villa,2026-04-11,Matchweek 32,Sat
+1969,2026-04-18 Aston Villa-Sunderland,2026-04-18,Matchweek 33,Sat
+1970,2026-04-25 Fulham-Aston Villa,2026-04-25,Matchweek 34,Sat
+1971,2026-05-02 Aston Villa-Tottenham,2026-05-02,Matchweek 35,Sat
+1972,2026-05-09 Burnley-Aston Villa,2026-05-09,Matchweek 36,Sat
+1973,2026-05-17 Aston Villa-Liverpool,2026-05-17,Matchweek 37,Sun
+1974,2026-05-24 Manchester City-Aston Villa,2026-05-24,Matchweek 38,Sun
+1975,2025-08-15 Liverpool-Bournemouth,2025-08-15,Matchweek 1,Fri
+1976,2025-08-23 Bournemouth-Wolves,2025-08-23,Matchweek 2,Sat
+1977,2025-08-30 Tottenham-Bournemouth,2025-08-30,Matchweek 3,Sat
+1978,2025-09-13 Bournemouth-Brighton,2025-09-13,Matchweek 4,Sat
+1979,2025-09-21 Bournemouth-Newcastle Utd,2025-09-21,Matchweek 5,Sun
+1980,2025-09-27 Leeds United-Bournemouth,2025-09-27,Matchweek 6,Sat
+1981,2025-10-03 Bournemouth-Fulham,2025-10-03,Matchweek 7,Fri
+1982,2025-10-18 Crystal Palace-Bournemouth,2025-10-18,Matchweek 8,Sat
+1983,2025-10-26 Bournemouth-Nott'ham Forest,2025-10-26,Matchweek 9,Sun
+1984,2025-11-02 Manchester City-Bournemouth,2025-11-02,Matchweek 10,Sun
+1985,2025-11-22 Bournemouth-West Ham,2025-11-22,Matchweek 12,Sat
+1986,2025-11-29 Sunderland-Bournemouth,2025-11-29,Matchweek 13,Sat
+1987,2025-12-02 Bournemouth-Everton,2025-12-02,Matchweek 14,Tue
+1988,2025-12-06 Bournemouth-Chelsea,2025-12-06,Matchweek 15,Sat
+1989,2025-12-15 Manchester Utd-Bournemouth,2025-12-15,Matchweek 16,Mon
+1990,2025-12-20 Bournemouth-Burnley,2025-12-20,Matchweek 17,Sat
+1991,2025-12-27 Brentford-Bournemouth,2025-12-27,Matchweek 18,Sat
+1992,2025-12-30 Chelsea-Bournemouth,2025-12-30,Matchweek 19,Tue
+1993,2026-01-07 Bournemouth-Tottenham,2026-01-07,Matchweek 21,Wed
+1994,2026-01-17 Brighton-Bournemouth,2026-01-17,Matchweek 22,Sat
+1995,2026-01-24 Bournemouth-Liverpool,2026-01-24,Matchweek 23,Sat
+1996,2026-01-31 Wolves-Bournemouth,2026-01-31,Matchweek 24,Sat
+1997,2026-02-11 Everton-Bournemouth,2026-02-11,Matchweek 26,Wed
+1998,2026-02-21 West Ham-Bournemouth,2026-02-21,Matchweek 27,Sat
+1999,2026-02-28 Bournemouth-Sunderland,2026-02-28,Matchweek 28,Sat
+2000,2026-03-04 Bournemouth-Brentford,2026-03-04,Matchweek 29,Wed
+2001,2026-03-14 Burnley-Bournemouth,2026-03-14,Matchweek 30,Sat
+2002,2026-03-21 Bournemouth-Manchester Utd,2026-03-21,Matchweek 31,Sat
+2003,2026-04-18 Newcastle Utd-Bournemouth,2026-04-18,Matchweek 33,Sat
+2004,2026-04-25 Bournemouth-Leeds United,2026-04-25,Matchweek 34,Sat
+2005,2026-05-02 Bournemouth-Crystal Palace,2026-05-02,Matchweek 35,Sat
+2006,2026-05-09 Fulham-Bournemouth,2026-05-09,Matchweek 36,Sat
+2007,2026-05-17 Bournemouth-Manchester City,2026-05-17,Matchweek 37,Sun
+2008,2026-05-24 Nott'ham Forest-Bournemouth,2026-05-24,Matchweek 38,Sun
+2009,2025-08-17 Nott'ham Forest-Brentford,2025-08-17,Matchweek 1,Sun
+2010,2025-08-30 Sunderland-Brentford,2025-08-30,Matchweek 3,Sat
+2011,2025-09-13 Brentford-Chelsea,2025-09-13,Matchweek 4,Sat
+2012,2025-09-20 Fulham-Brentford,2025-09-20,Matchweek 5,Sat
+2013,2025-09-27 Brentford-Manchester Utd,2025-09-27,Matchweek 6,Sat
+2014,2025-10-05 Brentford-Manchester City,2025-10-05,Matchweek 7,Sun
+2015,2025-10-20 West Ham-Brentford,2025-10-20,Matchweek 8,Mon
+2016,2025-10-25 Brentford-Liverpool,2025-10-25,Matchweek 9,Sat
+2017,2025-11-01 Crystal Palace-Brentford,2025-11-01,Matchweek 10,Sat
+2018,2025-11-09 Brentford-Newcastle Utd,2025-11-09,Matchweek 11,Sun
+2019,2025-11-22 Brighton-Brentford,2025-11-22,Matchweek 12,Sat
+2020,2025-11-29 Brentford-Burnley,2025-11-29,Matchweek 13,Sat
+2021,2025-12-06 Tottenham-Brentford,2025-12-06,Matchweek 15,Sat
+2022,2025-12-14 Brentford-Leeds United,2025-12-14,Matchweek 16,Sun
+2023,2025-12-20 Wolves-Brentford,2025-12-20,Matchweek 17,Sat
+2024,2026-01-01 Brentford-Tottenham,2026-01-01,Matchweek 19,Thu
+2025,2026-01-04 Everton-Brentford,2026-01-04,Matchweek 20,Sun
+2026,2026-01-07 Brentford-Sunderland,2026-01-07,Matchweek 21,Wed
+2027,2026-01-17 Chelsea-Brentford,2026-01-17,Matchweek 22,Sat
+2028,2026-01-24 Brentford-Nott'ham Forest,2026-01-24,Matchweek 23,Sat
+2029,2026-02-07 Newcastle Utd-Brentford,2026-02-07,Matchweek 25,Sat
+2030,2026-02-21 Brentford-Brighton,2026-02-21,Matchweek 27,Sat
+2031,2026-02-28 Burnley-Brentford,2026-02-28,Matchweek 28,Sat
+2032,2026-03-14 Brentford-Wolves,2026-03-14,Matchweek 30,Sat
+2033,2026-03-21 Leeds United-Brentford,2026-03-21,Matchweek 31,Sat
+2034,2026-04-11 Brentford-Everton,2026-04-11,Matchweek 32,Sat
+2035,2026-04-18 Brentford-Fulham,2026-04-18,Matchweek 33,Sat
+2036,2026-04-25 Manchester Utd-Brentford,2026-04-25,Matchweek 34,Sat
+2037,2026-05-02 Brentford-West Ham,2026-05-02,Matchweek 35,Sat
+2038,2026-05-09 Manchester City-Brentford,2026-05-09,Matchweek 36,Sat
+2039,2026-05-17 Brentford-Crystal Palace,2026-05-17,Matchweek 37,Sun
+2040,2026-05-24 Liverpool-Brentford,2026-05-24,Matchweek 38,Sun
+2041,2025-08-16 Brighton-Fulham,2025-08-16,Matchweek 1,Sat
+2042,2025-08-24 Everton-Brighton,2025-08-24,Matchweek 2,Sun
+2043,2025-08-31 Brighton-Manchester City,2025-08-31,Matchweek 3,Sun
+2044,2025-09-20 Brighton-Tottenham,2025-09-20,Matchweek 5,Sat
+2045,2025-09-27 Chelsea-Brighton,2025-09-27,Matchweek 6,Sat
+2046,2025-10-05 Wolves-Brighton,2025-10-05,Matchweek 7,Sun
+2047,2025-10-18 Brighton-Newcastle Utd,2025-10-18,Matchweek 8,Sat
+2048,2025-10-25 Manchester Utd-Brighton,2025-10-25,Matchweek 9,Sat
+2049,2025-11-01 Brighton-Leeds United,2025-11-01,Matchweek 10,Sat
+2050,2025-11-09 Crystal Palace-Brighton,2025-11-09,Matchweek 11,Sun
+2051,2025-11-30 Nott'ham Forest-Brighton,2025-11-30,Matchweek 13,Sun
+2052,2025-12-07 Brighton-West Ham,2025-12-07,Matchweek 15,Sun
+2053,2025-12-13 Liverpool-Brighton,2025-12-13,Matchweek 16,Sat
+2054,2025-12-20 Brighton-Sunderland,2025-12-20,Matchweek 17,Sat
+2055,2025-12-30 West Ham-Brighton,2025-12-30,Matchweek 19,Tue
+2056,2026-01-03 Brighton-Burnley,2026-01-03,Matchweek 20,Sat
+2057,2026-01-07 Manchester City-Brighton,2026-01-07,Matchweek 21,Wed
+2058,2026-01-24 Fulham-Brighton,2026-01-24,Matchweek 23,Sat
+2059,2026-01-31 Brighton-Everton,2026-01-31,Matchweek 24,Sat
+2060,2026-02-07 Brighton-Crystal Palace,2026-02-07,Matchweek 25,Sat
+2061,2026-02-28 Brighton-Nott'ham Forest,2026-02-28,Matchweek 28,Sat
+2062,2026-03-14 Sunderland-Brighton,2026-03-14,Matchweek 30,Sat
+2063,2026-03-21 Brighton-Liverpool,2026-03-21,Matchweek 31,Sat
+2064,2026-04-11 Burnley-Brighton,2026-04-11,Matchweek 32,Sat
+2065,2026-04-18 Tottenham-Brighton,2026-04-18,Matchweek 33,Sat
+2066,2026-04-25 Brighton-Chelsea,2026-04-25,Matchweek 34,Sat
+2067,2026-05-02 Newcastle Utd-Brighton,2026-05-02,Matchweek 35,Sat
+2068,2026-05-09 Brighton-Wolves,2026-05-09,Matchweek 36,Sat
+2069,2026-05-17 Leeds United-Brighton,2026-05-17,Matchweek 37,Sun
+2070,2026-05-24 Brighton-Manchester Utd,2026-05-24,Matchweek 38,Sun
+2071,2025-08-16 Tottenham-Burnley,2025-08-16,Matchweek 1,Sat
+2072,2025-08-23 Burnley-Sunderland,2025-08-23,Matchweek 2,Sat
+2073,2025-08-30 Manchester Utd-Burnley,2025-08-30,Matchweek 3,Sat
+2074,2025-09-14 Burnley-Liverpool,2025-09-14,Matchweek 4,Sun
+2075,2025-09-20 Burnley-Nott'ham Forest,2025-09-20,Matchweek 5,Sat
+2076,2025-09-27 Manchester City-Burnley,2025-09-27,Matchweek 6,Sat
+2077,2025-10-18 Burnley-Leeds United,2025-10-18,Matchweek 8,Sat
+2078,2025-10-26 Wolves-Burnley,2025-10-26,Matchweek 9,Sun
+2079,2025-11-08 West Ham-Burnley,2025-11-08,Matchweek 11,Sat
+2080,2025-11-22 Burnley-Chelsea,2025-11-22,Matchweek 12,Sat
+2081,2025-12-03 Burnley-Crystal Palace,2025-12-03,Matchweek 14,Wed
+2082,2025-12-06 Newcastle Utd-Burnley,2025-12-06,Matchweek 15,Sat
+2083,2025-12-13 Burnley-Fulham,2025-12-13,Matchweek 16,Sat
+2084,2025-12-27 Burnley-Everton,2025-12-27,Matchweek 18,Sat
+2085,2025-12-30 Burnley-Newcastle Utd,2025-12-30,Matchweek 19,Tue
+2086,2026-01-07 Burnley-Manchester Utd,2026-01-07,Matchweek 21,Wed
+2087,2026-01-17 Liverpool-Burnley,2026-01-17,Matchweek 22,Sat
+2088,2026-01-24 Burnley-Tottenham,2026-01-24,Matchweek 23,Sat
+2089,2026-01-31 Sunderland-Burnley,2026-01-31,Matchweek 24,Sat
+2090,2026-02-07 Burnley-West Ham,2026-02-07,Matchweek 25,Sat
+2091,2026-02-11 Crystal Palace-Burnley,2026-02-11,Matchweek 26,Wed
+2092,2026-02-21 Chelsea-Burnley,2026-02-21,Matchweek 27,Sat
+2093,2026-03-04 Everton-Burnley,2026-03-04,Matchweek 29,Wed
+2094,2026-03-21 Fulham-Burnley,2026-03-21,Matchweek 31,Sat
+2095,2026-04-18 Nott'ham Forest-Burnley,2026-04-18,Matchweek 33,Sat
+2096,2026-04-25 Burnley-Manchester City,2026-04-25,Matchweek 34,Sat
+2097,2026-05-02 Leeds United-Burnley,2026-05-02,Matchweek 35,Sat
+2098,2026-05-24 Burnley-Wolves,2026-05-24,Matchweek 38,Sun
+2099,2025-08-17 Chelsea-Crystal Palace,2025-08-17,Matchweek 1,Sun
+2100,2025-08-22 West Ham-Chelsea,2025-08-22,Matchweek 2,Fri
+2101,2025-08-30 Chelsea-Fulham,2025-08-30,Matchweek 3,Sat
+2102,2025-09-20 Manchester Utd-Chelsea,2025-09-20,Matchweek 5,Sat
+2103,2025-10-04 Chelsea-Liverpool,2025-10-04,Matchweek 7,Sat
+2104,2025-10-18 Nott'ham Forest-Chelsea,2025-10-18,Matchweek 8,Sat
+2105,2025-10-25 Chelsea-Sunderland,2025-10-25,Matchweek 9,Sat
+2106,2025-11-01 Tottenham-Chelsea,2025-11-01,Matchweek 10,Sat
+2107,2025-11-08 Chelsea-Wolves,2025-11-08,Matchweek 11,Sat
+2108,2025-12-03 Leeds United-Chelsea,2025-12-03,Matchweek 14,Wed
+2109,2025-12-13 Chelsea-Everton,2025-12-13,Matchweek 16,Sat
+2110,2025-12-20 Newcastle Utd-Chelsea,2025-12-20,Matchweek 17,Sat
+2111,2026-01-04 Manchester City-Chelsea,2026-01-04,Matchweek 20,Sun
+2112,2026-01-07 Fulham-Chelsea,2026-01-07,Matchweek 21,Wed
+2113,2026-01-24 Crystal Palace-Chelsea,2026-01-24,Matchweek 23,Sat
+2114,2026-01-31 Chelsea-West Ham,2026-01-31,Matchweek 24,Sat
+2115,2026-02-07 Wolves-Chelsea,2026-02-07,Matchweek 25,Sat
+2116,2026-02-11 Chelsea-Leeds United,2026-02-11,Matchweek 26,Wed
+2117,2026-03-14 Chelsea-Newcastle Utd,2026-03-14,Matchweek 30,Sat
+2118,2026-03-21 Everton-Chelsea,2026-03-21,Matchweek 31,Sat
+2119,2026-04-11 Chelsea-Manchester City,2026-04-11,Matchweek 32,Sat
+2120,2026-04-18 Chelsea-Manchester Utd,2026-04-18,Matchweek 33,Sat
+2121,2026-05-02 Chelsea-Nott'ham Forest,2026-05-02,Matchweek 35,Sat
+2122,2026-05-09 Liverpool-Chelsea,2026-05-09,Matchweek 36,Sat
+2123,2026-05-17 Chelsea-Tottenham,2026-05-17,Matchweek 37,Sun
+2124,2026-05-24 Sunderland-Chelsea,2026-05-24,Matchweek 38,Sun
+2125,2025-08-24 Crystal Palace-Nott'ham Forest,2025-08-24,Matchweek 2,Sun
+2126,2025-09-13 Crystal Palace-Sunderland,2025-09-13,Matchweek 4,Sat
+2127,2025-09-20 West Ham-Crystal Palace,2025-09-20,Matchweek 5,Sat
+2128,2025-09-27 Crystal Palace-Liverpool,2025-09-27,Matchweek 6,Sat
+2129,2025-10-05 Everton-Crystal Palace,2025-10-05,Matchweek 7,Sun
+2130,2025-11-22 Wolves-Crystal Palace,2025-11-22,Matchweek 12,Sat
+2131,2025-11-30 Crystal Palace-Manchester Utd,2025-11-30,Matchweek 13,Sun
+2132,2025-12-07 Fulham-Crystal Palace,2025-12-07,Matchweek 15,Sun
+2133,2025-12-14 Crystal Palace-Manchester City,2025-12-14,Matchweek 16,Sun
+2134,2025-12-20 Leeds United-Crystal Palace,2025-12-20,Matchweek 17,Sat
+2135,2025-12-28 Crystal Palace-Tottenham,2025-12-28,Matchweek 18,Sun
+2136,2026-01-01 Crystal Palace-Fulham,2026-01-01,Matchweek 19,Thu
+2137,2026-01-04 Newcastle Utd-Crystal Palace,2026-01-04,Matchweek 20,Sun
+2138,2026-01-17 Sunderland-Crystal Palace,2026-01-17,Matchweek 22,Sat
+2139,2026-01-31 Nott'ham Forest-Crystal Palace,2026-01-31,Matchweek 24,Sat
+2140,2026-02-21 Crystal Palace-Wolves,2026-02-21,Matchweek 27,Sat
+2141,2026-02-28 Manchester Utd-Crystal Palace,2026-02-28,Matchweek 28,Sat
+2142,2026-03-04 Tottenham-Crystal Palace,2026-03-04,Matchweek 29,Wed
+2143,2026-03-14 Crystal Palace-Leeds United,2026-03-14,Matchweek 30,Sat
+2144,2026-03-21 Manchester City-Crystal Palace,2026-03-21,Matchweek 31,Sat
+2145,2026-04-11 Crystal Palace-Newcastle Utd,2026-04-11,Matchweek 32,Sat
+2146,2026-04-18 Crystal Palace-West Ham,2026-04-18,Matchweek 33,Sat
+2147,2026-04-25 Liverpool-Crystal Palace,2026-04-25,Matchweek 34,Sat
+2148,2026-05-09 Crystal Palace-Everton,2026-05-09,Matchweek 36,Sat
+2149,2025-08-18 Leeds United-Everton,2025-08-18,Matchweek 1,Mon
+2150,2025-08-30 Wolves-Everton,2025-08-30,Matchweek 3,Sat
+2151,2025-09-20 Liverpool-Everton,2025-09-20,Matchweek 5,Sat
+2152,2025-09-29 Everton-West Ham,2025-09-29,Matchweek 6,Mon
+2153,2025-10-18 Manchester City-Everton,2025-10-18,Matchweek 8,Sat
+2154,2025-10-26 Everton-Tottenham,2025-10-26,Matchweek 9,Sun
+2155,2025-11-03 Sunderland-Everton,2025-11-03,Matchweek 10,Mon
+2156,2025-11-08 Everton-Fulham,2025-11-08,Matchweek 11,Sat
+2157,2025-11-24 Manchester Utd-Everton,2025-11-24,Matchweek 12,Mon
+2158,2025-11-29 Everton-Newcastle Utd,2025-11-29,Matchweek 13,Sat
+2159,2025-12-06 Everton-Nott'ham Forest,2025-12-06,Matchweek 15,Sat
+2160,2025-12-30 Nott'ham Forest-Everton,2025-12-30,Matchweek 19,Tue
+2161,2026-01-07 Everton-Wolves,2026-01-07,Matchweek 21,Wed
+2162,2026-01-24 Everton-Leeds United,2026-01-24,Matchweek 23,Sat
+2163,2026-02-07 Fulham-Everton,2026-02-07,Matchweek 25,Sat
+2164,2026-02-21 Everton-Manchester Utd,2026-02-21,Matchweek 27,Sat
+2165,2026-02-28 Newcastle Utd-Everton,2026-02-28,Matchweek 28,Sat
+2166,2026-04-18 Everton-Liverpool,2026-04-18,Matchweek 33,Sat
+2167,2026-04-25 West Ham-Everton,2026-04-25,Matchweek 34,Sat
+2168,2026-05-02 Everton-Manchester City,2026-05-02,Matchweek 35,Sat
+2169,2026-05-17 Everton-Sunderland,2026-05-17,Matchweek 37,Sun
+2170,2026-05-24 Tottenham-Everton,2026-05-24,Matchweek 38,Sun
+2171,2025-08-24 Fulham-Manchester Utd,2025-08-24,Matchweek 2,Sun
+2172,2025-09-13 Fulham-Leeds United,2025-09-13,Matchweek 4,Sat
+2173,2025-10-25 Newcastle Utd-Fulham,2025-10-25,Matchweek 9,Sat
+2174,2025-11-01 Fulham-Wolves,2025-11-01,Matchweek 10,Sat
+2175,2025-11-22 Fulham-Sunderland,2025-11-22,Matchweek 12,Sat
+2176,2025-11-29 Tottenham-Fulham,2025-11-29,Matchweek 13,Sat
+2177,2025-12-02 Fulham-Manchester City,2025-12-02,Matchweek 14,Tue
+2178,2025-12-22 Fulham-Nott'ham Forest,2025-12-22,Matchweek 17,Mon
+2179,2025-12-27 West Ham-Fulham,2025-12-27,Matchweek 18,Sat
+2180,2026-01-04 Fulham-Liverpool,2026-01-04,Matchweek 20,Sun
+2181,2026-01-17 Leeds United-Fulham,2026-01-17,Matchweek 22,Sat
+2182,2026-01-31 Manchester Utd-Fulham,2026-01-31,Matchweek 24,Sat
+2183,2026-02-11 Manchester City-Fulham,2026-02-11,Matchweek 26,Wed
+2184,2026-02-21 Sunderland-Fulham,2026-02-21,Matchweek 27,Sat
+2185,2026-02-28 Fulham-Tottenham,2026-02-28,Matchweek 28,Sat
+2186,2026-03-04 Fulham-West Ham,2026-03-04,Matchweek 29,Wed
+2187,2026-03-14 Nott'ham Forest-Fulham,2026-03-14,Matchweek 30,Sat
+2188,2026-04-11 Liverpool-Fulham,2026-04-11,Matchweek 32,Sat
+2189,2026-05-17 Wolves-Fulham,2026-05-17,Matchweek 37,Sun
+2190,2026-05-24 Fulham-Newcastle Utd,2026-05-24,Matchweek 38,Sun
+2191,2025-08-30 Leeds United-Newcastle Utd,2025-08-30,Matchweek 3,Sat
+2192,2025-09-20 Wolves-Leeds United,2025-09-20,Matchweek 5,Sat
+2193,2025-10-04 Leeds United-Tottenham,2025-10-04,Matchweek 7,Sat
+2194,2025-10-24 Leeds United-West Ham,2025-10-24,Matchweek 9,Fri
+2195,2025-11-09 Nott'ham Forest-Leeds United,2025-11-09,Matchweek 11,Sun
+2196,2025-11-29 Manchester City-Leeds United,2025-11-29,Matchweek 13,Sat
+2197,2025-12-06 Leeds United-Liverpool,2025-12-06,Matchweek 15,Sat
+2198,2025-12-28 Sunderland-Leeds United,2025-12-28,Matchweek 18,Sun
+2199,2026-01-01 Liverpool-Leeds United,2026-01-01,Matchweek 19,Thu
+2200,2026-01-04 Leeds United-Manchester Utd,2026-01-04,Matchweek 20,Sun
+2201,2026-01-07 Newcastle Utd-Leeds United,2026-01-07,Matchweek 21,Wed
+2202,2026-02-07 Leeds United-Nott'ham Forest,2026-02-07,Matchweek 25,Sat
+2203,2026-02-28 Leeds United-Manchester City,2026-02-28,Matchweek 28,Sat
+2204,2026-03-04 Leeds United-Sunderland,2026-03-04,Matchweek 29,Wed
+2205,2026-04-11 Manchester Utd-Leeds United,2026-04-11,Matchweek 32,Sat
+2206,2026-04-18 Leeds United-Wolves,2026-04-18,Matchweek 33,Sat
+2207,2026-05-09 Tottenham-Leeds United,2026-05-09,Matchweek 36,Sat
+2208,2026-05-24 West Ham-Leeds United,2026-05-24,Matchweek 38,Sun
+2209,2025-08-25 Newcastle Utd-Liverpool,2025-08-25,Matchweek 2,Mon
+2210,2025-10-19 Liverpool-Manchester Utd,2025-10-19,Matchweek 8,Sun
+2211,2025-11-09 Manchester City-Liverpool,2025-11-09,Matchweek 11,Sun
+2212,2025-11-22 Liverpool-Nott'ham Forest,2025-11-22,Matchweek 12,Sat
+2213,2025-11-30 West Ham-Liverpool,2025-11-30,Matchweek 13,Sun
+2214,2025-12-03 Liverpool-Sunderland,2025-12-03,Matchweek 14,Wed
+2215,2025-12-20 Tottenham-Liverpool,2025-12-20,Matchweek 17,Sat
+2216,2025-12-27 Liverpool-Wolves,2025-12-27,Matchweek 18,Sat
+2217,2026-01-31 Liverpool-Newcastle Utd,2026-01-31,Matchweek 24,Sat
+2218,2026-02-07 Liverpool-Manchester City,2026-02-07,Matchweek 25,Sat
+2219,2026-02-11 Sunderland-Liverpool,2026-02-11,Matchweek 26,Wed
+2220,2026-02-21 Nott'ham Forest-Liverpool,2026-02-21,Matchweek 27,Sat
+2221,2026-02-28 Liverpool-West Ham,2026-02-28,Matchweek 28,Sat
+2222,2026-03-04 Wolves-Liverpool,2026-03-04,Matchweek 29,Wed
+2223,2026-03-14 Liverpool-Tottenham,2026-03-14,Matchweek 30,Sat
+2224,2026-05-02 Manchester Utd-Liverpool,2026-05-02,Matchweek 35,Sat
+2225,2025-08-16 Wolves-Manchester City,2025-08-16,Matchweek 1,Sat
+2226,2025-08-23 Manchester City-Tottenham,2025-08-23,Matchweek 2,Sat
+2227,2025-09-14 Manchester City-Manchester Utd,2025-09-14,Matchweek 4,Sun
+2228,2025-11-22 Newcastle Utd-Manchester City,2025-11-22,Matchweek 12,Sat
+2229,2025-12-06 Manchester City-Sunderland,2025-12-06,Matchweek 15,Sat
+2230,2025-12-20 Manchester City-West Ham,2025-12-20,Matchweek 17,Sat
+2231,2025-12-27 Nott'ham Forest-Manchester City,2025-12-27,Matchweek 18,Sat
+2232,2026-01-01 Sunderland-Manchester City,2026-01-01,Matchweek 19,Thu
+2233,2026-01-17 Manchester Utd-Manchester City,2026-01-17,Matchweek 22,Sat
+2234,2026-01-24 Manchester City-Wolves,2026-01-24,Matchweek 23,Sat
+2235,2026-01-31 Tottenham-Manchester City,2026-01-31,Matchweek 24,Sat
+2236,2026-02-21 Manchester City-Newcastle Utd,2026-02-21,Matchweek 27,Sat
+2237,2026-03-04 Manchester City-Nott'ham Forest,2026-03-04,Matchweek 29,Wed
+2238,2026-03-14 West Ham-Manchester City,2026-03-14,Matchweek 30,Sat
+2239,2025-10-04 Manchester Utd-Sunderland,2025-10-04,Matchweek 7,Sat
+2240,2025-11-01 Nott'ham Forest-Manchester Utd,2025-11-01,Matchweek 10,Sat
+2241,2025-11-08 Tottenham-Manchester Utd,2025-11-08,Matchweek 11,Sat
+2242,2025-12-04 Manchester Utd-West Ham,2025-12-04,Matchweek 14,Thu
+2243,2025-12-08 Wolves-Manchester Utd,2025-12-08,Matchweek 15,Mon
+2244,2025-12-26 Manchester Utd-Newcastle Utd,2025-12-26,Matchweek 18,Fri
+2245,2025-12-30 Manchester Utd-Wolves,2025-12-30,Matchweek 19,Tue
+2246,2026-02-07 Manchester Utd-Tottenham,2026-02-07,Matchweek 25,Sat
+2247,2026-02-11 West Ham-Manchester Utd,2026-02-11,Matchweek 26,Wed
+2248,2026-03-04 Newcastle Utd-Manchester Utd,2026-03-04,Matchweek 29,Wed
+2249,2026-05-09 Sunderland-Manchester Utd,2026-05-09,Matchweek 36,Sat
+2250,2026-05-17 Manchester Utd-Nott'ham Forest,2026-05-17,Matchweek 37,Sun
+2251,2025-09-13 Newcastle Utd-Wolves,2025-09-13,Matchweek 4,Sat
+2252,2025-10-05 Newcastle Utd-Nott'ham Forest,2025-10-05,Matchweek 7,Sun
+2253,2025-11-02 West Ham-Newcastle Utd,2025-11-02,Matchweek 10,Sun
+2254,2025-12-02 Newcastle Utd-Tottenham,2025-12-02,Matchweek 14,Tue
+2255,2025-12-14 Sunderland-Newcastle Utd,2025-12-14,Matchweek 16,Sun
+2256,2026-01-17 Wolves-Newcastle Utd,2026-01-17,Matchweek 22,Sat
+2257,2026-02-11 Tottenham-Newcastle Utd,2026-02-11,Matchweek 26,Wed
+2258,2026-03-21 Newcastle Utd-Sunderland,2026-03-21,Matchweek 31,Sat
+2259,2026-05-09 Nott'ham Forest-Newcastle Utd,2026-05-09,Matchweek 36,Sat
+2260,2026-05-17 Newcastle Utd-West Ham,2026-05-17,Matchweek 37,Sun
+2261,2025-08-31 Nott'ham Forest-West Ham,2025-08-31,Matchweek 3,Sun
+2262,2025-09-27 Nott'ham Forest-Sunderland,2025-09-27,Matchweek 6,Sat
+2263,2025-12-03 Wolves-Nott'ham Forest,2025-12-03,Matchweek 14,Wed
+2264,2025-12-14 Nott'ham Forest-Tottenham,2025-12-14,Matchweek 16,Sun
+2265,2026-01-06 West Ham-Nott'ham Forest,2026-01-06,Matchweek 21,Tue
+2266,2026-02-11 Nott'ham Forest-Wolves,2026-02-11,Matchweek 26,Wed
+2267,2026-03-21 Tottenham-Nott'ham Forest,2026-03-21,Matchweek 31,Sat
+2268,2026-04-25 Sunderland-Nott'ham Forest,2026-04-25,Matchweek 34,Sat
+2269,2025-08-16 Sunderland-West Ham,2025-08-16,Matchweek 1,Sat
+2270,2025-10-18 Sunderland-Wolves,2025-10-18,Matchweek 8,Sat
+2271,2026-01-04 Tottenham-Sunderland,2026-01-04,Matchweek 20,Sun
+2272,2026-01-24 West Ham-Sunderland,2026-01-24,Matchweek 23,Sat
+2273,2026-04-11 Sunderland-Tottenham,2026-04-11,Matchweek 32,Sat
+2274,2026-05-02 Wolves-Sunderland,2026-05-02,Matchweek 35,Sat
+2275,2025-09-13 West Ham-Tottenham,2025-09-13,Matchweek 4,Sat
+2276,2025-09-27 Tottenham-Wolves,2025-09-27,Matchweek 6,Sat
+2277,2026-01-17 Tottenham-West Ham,2026-01-17,Matchweek 22,Sat
+2278,2026-04-25 Wolves-Tottenham,2026-04-25,Matchweek 34,Sat
+2279,2026-01-03 Wolves-West Ham,2026-01-03,Matchweek 20,Sat
+2280,2026-04-11 West Ham-Wolves,2026-04-11,Matchweek 32,Sat

@@ -35,10 +35,16 @@ def load_config(filename='database.ini', section='postgresql'):
         sections = parser.sections()
         raise Exception(f"Section {section} not found in {file_path}. Available sections: {sections}")
 
+    # Docker environment: Replace localhost with host.docker.internal
+    if 'host' in config and config['host'] == 'localhost':
+        # Check if running in Docker
+        if os.path.exists('/.dockerenv') or os.environ.get('AIRFLOW_HOME'):
+            config['host'] = 'host.docker.internal'
+            print(f"[Docker detected] Using host.docker.internal for PostgreSQL connection")
+
     return config
 
 def connect(config):
-    """Kết nối tới PostgreSQL và trả về đối tượng connection"""
     conn = None
     try:
         conn = psycopg2.connect(**config)
@@ -57,28 +63,28 @@ def load_dim_stadium(cursor, csv_path):
     );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ (vì có foreign keys, cần xóa fact tables trước)
-    cursor.execute("TRUNCATE TABLE Dim_Stadium CASCADE;")
     
-    # CSV has typo 'statium_name' but database has 'stadium_name'
-    # Read CSV and rename column
+    # Đọc CSV và rename column
     df = pd.read_csv(csv_path)
     df_renamed = df.rename(columns={'statium_name': 'stadium_name'})
     
-    # Write to StringIO buffer for COPY
-    buffer = StringIO()
-    df_renamed.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
+    # UPSERT từng record (ON CONFLICT DO UPDATE)
+    upsert_sql = """
+        INSERT INTO Dim_Stadium (stadium_id, stadium_name, capacity)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (stadium_id) 
+        DO UPDATE SET 
+            stadium_name = EXCLUDED.stadium_name,
+            capacity = EXCLUDED.capacity;
+    """
     
-    cursor.copy_expert("""
-        COPY Dim_Stadium(stadium_id, stadium_name, capacity)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("dim_stadium loaded successfully")
+    records = df_renamed.values.tolist()
+    cursor.executemany(upsert_sql, records)
+    print(f"dim_stadium upserted: {len(records)} records")
 
 
 def load_dim_team(cursor, csv_path):
+    """Load dim_team với UPSERT - cập nhật hoặc insert dữ liệu mới"""
     sql1 = '''
     CREATE TABLE IF NOT EXISTS Dim_Team (
         team_id INT PRIMARY KEY,
@@ -89,21 +95,24 @@ def load_dim_team(cursor, csv_path):
     );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE Dim_Team CASCADE;")
     
-    # Read CSV and load data
     df = pd.read_csv(csv_path)
-    buffer = StringIO()
-    df.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
     
-    cursor.copy_expert("""
-        COPY Dim_Team(team_id, team_name, founded_year, stadium_id, short_name)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("dim_team loaded successfully")
+    # UPSERT từng record
+    upsert_sql = """
+        INSERT INTO Dim_Team (team_id, team_name, founded_year, stadium_id, short_name)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (team_id)
+        DO UPDATE SET
+            team_name = EXCLUDED.team_name,
+            founded_year = EXCLUDED.founded_year,
+            stadium_id = EXCLUDED.stadium_id,
+            short_name = EXCLUDED.short_name;
+    """
+    
+    records = df.values.tolist()
+    cursor.executemany(upsert_sql, records)
+    print(f"dim_team upserted: {len(records)} records")
 
 
 def load_dim_match(cursor, csv_path):
@@ -115,26 +124,27 @@ def load_dim_match(cursor, csv_path):
     );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE Dim_Match CASCADE;")
     
-    # CSV has 5 columns but we only need 3: game_id, game, date (mapped to game_date)
-    # Read CSV and select only needed columns
     df = pd.read_csv(csv_path)
     df_selected = df[['game_id', 'game', 'date']].copy()
     df_selected.rename(columns={'date': 'game_date', 'game': 'match_name', 'game_id': 'match_id'}, inplace=True)
     
-    # Write to StringIO buffer for COPY
-    buffer = StringIO()
-    df_selected.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
+    # Convert NaN to None (NULL in SQL)
+    df_selected = df_selected.replace({pd.NA: None, pd.NaT: None})
+    df_selected = df_selected.where(pd.notna(df_selected), None)
     
-    cursor.copy_expert("""
-        COPY Dim_Match(match_id, match_name, match_date)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("dim_match loaded successfully")
+    upsert_sql = """
+        INSERT INTO Dim_Match (match_id, match_name, match_date)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (match_id)
+        DO UPDATE SET
+            match_name = EXCLUDED.match_name,
+            match_date = EXCLUDED.match_date;
+    """
+    
+    records = df_selected.values.tolist()
+    cursor.executemany(upsert_sql, records)
+    print(f"dim_match upserted: {len(records)} records")
 
 
 def load_dim_player(cursor, csv_path):
@@ -148,30 +158,29 @@ def load_dim_player(cursor, csv_path):
     );
     ''' 
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE Dim_Player CASCADE;")
     
-    # CSV has column 'player' but database has 'player_name'
-    # Read CSV and rename column
     df = pd.read_csv(csv_path)
     df_renamed = df.rename(columns={'player': 'player_name'})
     
-    # Chuyển đổi cột 'born' từ float sang integer (pandas có thể đọc thành float)
+    # Chuyển đổi cột 'born' từ float sang integer
     if 'born' in df_renamed.columns:
-        # Chuyển về Int64 (nullable integer) để xử lý NaN
         df_renamed['born'] = pd.to_numeric(df_renamed['born'], errors='coerce').astype('Int64')
     
-    # Write to StringIO buffer for COPY (na_rep='' để NaN thành empty string → NULL trong DB)
-    buffer = StringIO()
-    df_renamed.to_csv(buffer, index=False, header=False, na_rep='')
-    buffer.seek(0)
+    upsert_sql = """
+        INSERT INTO Dim_Player (player_id, player_name, pos, nation, born)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (player_id)
+        DO UPDATE SET
+            player_name = EXCLUDED.player_name,
+            pos = EXCLUDED.pos,
+            nation = EXCLUDED.nation,
+            born = EXCLUDED.born;
+    """
     
-    cursor.copy_expert("""
-        COPY Dim_Player(player_id, player_name, pos, nation, born)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("dim_player loaded successfully")
+    df_renamed = df_renamed.replace({pd.NA: None, pd.NaT: None})
+    records = df_renamed.values.tolist()
+    cursor.executemany(upsert_sql, records)
+    print(f"dim_player upserted: {len(records)} records")
 
 def load_dim_season(cursor, csv_path):
     sql1 = '''
@@ -180,27 +189,34 @@ def load_dim_season(cursor, csv_path):
         season_name VARCHAR(15) UNIQUE,
         start_year INT,
         end_year INT,
-        actual_start_date DATE ,
+        actual_start_date DATE,
         actual_end_date DATE
     );
     ''' 
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE Dim_season CASCADE;")
     
     df = pd.read_csv(csv_path)
-    buffer = StringIO()
-    df.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
     
-    cursor.copy_expert("""
-        COPY Dim_season(season_id, season_name, start_year, end_year, actual_start_date, actual_end_date)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("dim_season loaded successfully")
+    upsert_sql = """
+        INSERT INTO Dim_season (season_id, season_name, start_year, end_year, actual_start_date, actual_end_date)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (season_id)
+        DO UPDATE SET
+            season_name = EXCLUDED.season_name,
+            start_year = EXCLUDED.start_year,
+            end_year = EXCLUDED.end_year,
+            actual_start_date = EXCLUDED.actual_start_date,
+            actual_end_date = EXCLUDED.actual_end_date;
+    """
+    
+    import numpy as np
+    df = df.replace({pd.NA: None, pd.NaT: None, np.nan: None})
+    records = df.values.tolist()
+    cursor.executemany(upsert_sql, records)
+    print(f"dim_season upserted: {len(records)} records")
 
 def fact_team_match(cursor, csv_path):
+    """Load fact_team_match - chỉ insert dữ liệu mới (DO NOTHING nếu đã tồn tại)"""
     sql1 = '''
     CREATE TABLE IF NOT EXISTS fact_team_match (
     season          INT,
@@ -215,45 +231,68 @@ def fact_team_match(cursor, csv_path):
     "xG"            NUMERIC(4,2),
     "xGA"           NUMERIC(4,2),
     "Poss"          INT,
-    captain_id      INT,
     "Formation"     VARCHAR(20),
     "Opp Formation" VARCHAR(20),
 
-    -- Khóa chính đề xuất
     PRIMARY KEY (season, game_id, team_id),
 
-    -- FOREIGN KEYS
-    FOREIGN KEY (season)
-        REFERENCES dim_season(season_id),
-
-    FOREIGN KEY (game_id)
-        REFERENCES dim_match(match_id),
-
-    FOREIGN KEY (team_id)
-        REFERENCES dim_team(team_id),
-
-    FOREIGN KEY (opponent_id)
-        REFERENCES dim_team(team_id),
-
-    FOREIGN KEY (captain_id)
-        REFERENCES dim_player(player_id)
+    FOREIGN KEY (season) REFERENCES dim_season(season_id),
+    FOREIGN KEY (game_id) REFERENCES dim_match(match_id),
+    FOREIGN KEY (team_id) REFERENCES dim_team(team_id),
+    FOREIGN KEY (opponent_id) REFERENCES dim_team(team_id)
 );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE fact_team_match;")
+    
+    # Kiểm tra file new data có tồn tại không
+    if not os.path.exists(csv_path):
+        print(f"No new data")
+        return
     
     df = pd.read_csv(csv_path)
-    buffer = StringIO()
-    df.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
+    if len(df) == 0:
+        print(f"No new records")
+        return
     
-    cursor.copy_expert("""
-        COPY fact_team_match(season,game_id,team_id,opponent_id,round,venue,result,"GF","GA","xG","xGA","Poss",captain_id,"Formation","Opp Formation")
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("fact_team_match loaded successfully")
+    # Loại bỏ cột captain_id 
+    if 'captain_id' in df.columns:
+        df = df.drop(columns=['captain_id'])
+    
+    # Chỉ chọn các cột cần thiết theo đúng thứ tự trong SQL
+    columns_to_insert = [
+        'season', 'game_id', 'team_id', 'opponent_id', 'round', 'venue', 'result',
+        'GF', 'GA', 'xG', 'xGA', 'Poss', 'Formation', 'Opp Formation'
+    ]
+    df = df[columns_to_insert]
+    
+    # INSERT chỉ những records chưa có (skip records đã tồn tại)
+    insert_sql = """
+        INSERT INTO fact_team_match (
+            season, game_id, team_id, opponent_id, round, venue, result,
+            "GF", "GA", "xG", "xGA", "Poss", "Formation", "Opp Formation"
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (season, game_id, team_id)
+        DO NOTHING;
+    """
+    
+    import numpy as np
+    df = df.replace({pd.NA: None, pd.NaT: None, np.nan: None})
+    records = df.values.tolist()
+    
+    # Đếm số records đã có trong database
+    cursor.execute("SELECT COUNT(*) FROM fact_team_match")
+    count_before = cursor.fetchone()[0]
+    
+    cursor.executemany(insert_sql, records)
+    
+    # Đếm sau khi insert
+    cursor.execute("SELECT COUNT(*) FROM fact_team_match")
+    count_after = cursor.fetchone()[0]
+    
+    inserted = count_after - count_before
+    skipped = len(records) - inserted
+    print(f"{inserted} new, {skipped} skipped, {count_after} total in DB")
 
 def load_fact_team_point(cursor, csv_path):
     sql1 = '''
@@ -277,20 +316,44 @@ def load_fact_team_point(cursor, csv_path):
     );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE Fact_Team_Point;")
+    
+    if not os.path.exists(csv_path):
+        print(f"No new data, skipping")
+        return
     
     df = pd.read_csv(csv_path)
-    buffer = StringIO()
-    df.to_csv(buffer, index=False, header=False, na_rep='')
-    buffer.seek(0)
+    if len(df) == 0:
+        print(f"No new records, skipping")
+        return
     
-    cursor.copy_expert("""
-        COPY Fact_Team_Point(season_id, "Match_Category", "Rank", team_id, "MP", "W", "D", "L", "GF", "GA", "GD", "Pts", "Recent_Form")
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("fact_team_point loaded successfully")
+    # INSERT chỉ những records chưa có (skip records đã tồn tại)
+    insert_sql = """
+        INSERT INTO Fact_Team_Point (
+            season_id, "Match_Category", "Rank", team_id,
+            "MP", "W", "D", "L", "GF", "GA", "GD", "Pts", "Recent_Form"
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (season_id, team_id, "Match_Category")
+        DO NOTHING;
+    """
+    
+    import numpy as np
+    df = df.replace({pd.NA: None, pd.NaT: None, np.nan: None})
+    records = df.values.tolist()
+    
+    # Đếm số records đã có trong database
+    cursor.execute("SELECT COUNT(*) FROM Fact_Team_Point")
+    count_before = cursor.fetchone()[0]
+    
+    cursor.executemany(insert_sql, records)
+    
+    # Đếm sau khi insert
+    cursor.execute("SELECT COUNT(*) FROM Fact_Team_Point")
+    count_after = cursor.fetchone()[0]
+    
+    inserted = count_after - count_before
+    skipped = len(records) - inserted
+    print(f"{inserted} new, {skipped} skipped, {count_after} total in DB")
 
 def fact_player_match(cursor, csv_path):
     sql1 = '''
@@ -325,6 +388,7 @@ def fact_player_match(cursor, csv_path):
     take_ons_attempted      INT,
     take_ons_successful     INT,
 
+    PRIMARY KEY (season, game_id, team_id, player_id),
 
     FOREIGN KEY (season)      REFERENCES dim_season(season_id),
     FOREIGN KEY (game_id)     REFERENCES dim_match(match_id),
@@ -333,26 +397,61 @@ def fact_player_match(cursor, csv_path):
 );
     '''
     cursor.execute(sql1)
-    # Xóa dữ liệu cũ
-    cursor.execute("TRUNCATE TABLE fact_player_match;")
+    
+    if not os.path.exists(csv_path):
+        print(f"No new data, skipping")
+        return
     
     df = pd.read_csv(csv_path)
-    buffer = StringIO()
-    df.to_csv(buffer, index=False, header=False)
-    buffer.seek(0)
+    if len(df) == 0:
+        print(f"No new records, skipping")
+        return
     
-    cursor.copy_expert("""
-        COPY fact_player_match(season,game_id,team_id,player_id,min_played,goals,xG,xA,assists,penalty_made,penalty_attempted,shots,shots_on_target,yellow_cards,red_cards,touches,tackles,interceptions,blocks,shot_creating_actions,goal_creating_actions,passes_completed,passes_attempted,pass_completion_percent,progressive_passes,carries,progressive_carries,take_ons_attempted,take_ons_successful)
-        FROM STDIN
-        WITH (FORMAT CSV, DELIMITER ',')
-    """, buffer)
-    print("fact_player_match loaded successfully")
+    # INSERT chỉ những records chưa có (skip records đã tồn tại)
+    insert_sql = """
+        INSERT INTO fact_player_match (
+            season, game_id, team_id, player_id, min_played, goals, xG, xA, assists,
+            penalty_made, penalty_attempted, shots, shots_on_target, yellow_cards, red_cards,
+            touches, tackles, interceptions, blocks, shot_creating_actions, goal_creating_actions,
+            passes_completed, passes_attempted, pass_completion_percent, progressive_passes,
+            carries, progressive_carries, take_ons_attempted, take_ons_successful
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (season, game_id, team_id, player_id)
+        DO NOTHING;
+    """
+    
+    import numpy as np
+    df = df.replace({pd.NA: None, pd.NaT: None, np.nan: None})
+    
+    # Filter out rows with NULL player_id (cannot insert - part of PRIMARY KEY)
+    initial_count = len(df)
+    df = df[df['player_id'].notna()]
+    filtered_count = initial_count - len(df)
+    if filtered_count > 0:
+        print(f"Filtered out {filtered_count} rows with NULL player_id (cannot be in PRIMARY KEY)")
+    
+    records = df.values.tolist()
+    
+    # Đếm số records đã có trong database
+    cursor.execute("SELECT COUNT(*) FROM fact_player_match")
+    count_before = cursor.fetchone()[0]
+    
+    cursor.executemany(insert_sql, records)
+    
+    # Đếm sau khi insert
+    cursor.execute("SELECT COUNT(*) FROM fact_player_match")
+    count_after = cursor.fetchone()[0]
+    
+    inserted = count_after - count_before
+    skipped = len(records) - inserted
+    print(f" {inserted} new, {skipped} skipped, {count_after} total in DB")
 
 
 
 
 if __name__ == "__main__":
-    print("ETL Football - Load Process")
+    print("ETL Football - Load Process (Incremental with UPSERT)")
     
     # Load config và kết nối database
     config = load_config()
@@ -366,20 +465,22 @@ if __name__ == "__main__":
     cursor = conn.cursor()
     
     try:
-        # Load dimension tables trước (vì fact tables có foreign keys)
+        # Load dim tables trước (vì fact tables có foreign keys)
+        print("\nLoading dimension tables with UPSERT...")
         load_dim_stadium(cursor, os.path.join(DATA_PROCESSED_DIR, 'dim_stadium.csv'))
         load_dim_team(cursor, os.path.join(DATA_PROCESSED_DIR, 'dim_team.csv'))
         load_dim_match(cursor, os.path.join(DATA_PROCESSED_DIR, 'dim_match.csv'))
         load_dim_player(cursor, os.path.join(DATA_PROCESSED_DIR, 'dim_player.csv'))
         load_dim_season(cursor, os.path.join(DATA_PROCESSED_DIR, 'dim_season.csv'))
         
-        # Load fact tables sau
+        # Load fact tables sau với UPSERT
+        print("\nLoading fact tables with UPSERT...")
         fact_team_match(cursor, os.path.join(DATA_PROCESSED_DIR, 'fact_team_match_clean.csv'))
         load_fact_team_point(cursor, os.path.join(DATA_PROCESSED_DIR, 'fact_team_point.csv'))
         fact_player_match(cursor, os.path.join(DATA_PROCESSED_DIR, 'fact_player_match_clean.csv'))
         
-        print("\nLoad process completed successfully!")
+        print("\nLoad completed")
     finally:
-        # Đóng kết nối
+ 
         cursor.close()
         conn.close()
