@@ -5,6 +5,7 @@ from tqdm import tqdm
 import pandas as pd
 import time
 import os
+from pathlib import Path
 
 # --- 1. Cấu hình Chrome headless ---
 options = Options()
@@ -15,6 +16,15 @@ driver = webdriver.Chrome(options=options)
 
 # --- 2. Danh sách 5 mùa gần nhất ---
 seasons = ["2024-2025", "2023-2024", "2022-2023", "2021-2022", "2020-2021"]
+
+# --- 2.1. Thiết lập thư mục lưu dữ liệu giống Extract.py ---
+if "ETL_FOOTBALL_BASE_DIR" in os.environ:
+    BASE_DIR = os.environ["ETL_FOOTBALL_BASE_DIR"]
+else:
+    BASE_DIR = str(Path(__file__).parent.parent.absolute())
+
+DATA_RAW_DIR = os.path.join(BASE_DIR, "data_raw")
+os.makedirs(DATA_RAW_DIR, exist_ok=True)
 
 # --- 3. Tạo list để lưu kết quả ---
 all_data = []
@@ -68,14 +78,17 @@ for season in tqdm(seasons, desc="Crawling seasons", unit="season"):
                 "Recent_Form": recent_forms[i] if i < len(recent_forms) else ""
             })
 
-# --- 6. Lưu ra CSV ---
-# Giả sử bạn đang chạy file Python trong thư mục project gốc
-# và đã có sẵn thư mục con "data"
-file_path = os.path.join("data", "premier_league_last_5_seasons.csv")
+        # Việc tạo DataFrame và lưu file sẽ thực hiện sau khi crawl xong toàn bộ
 
+# --- 6. Tạo DataFrame và lưu ra file CSV như Extract.py ---
 columns = ["Mùa giải", "Match_Category", "Rank", "Team", "MP", "W", "D", "L", "GF:GA", "GD", "Pts", "Recent_Form"]
-df = pd.DataFrame(all_data, columns=columns)
-df.to_csv(file_path, index=False, encoding="utf-8-sig")
+team_points_df = pd.DataFrame(all_data, columns=columns)
 
+out_path = Path(DATA_RAW_DIR) / "team_point.csv"
+out_path.parent.mkdir(parents=True, exist_ok=True)
+team_points_df.to_csv(out_path, index=False, encoding="utf-8-sig")
+print(f"Saved: {out_path}")
+print(f"Total records: {len(team_points_df)}")
+
+# --- 7. Đóng trình duyệt ---
 driver.quit()
-print(f"File đã được lưu tại: {file_path}")
