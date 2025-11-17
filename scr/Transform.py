@@ -23,10 +23,7 @@ def save_table(df: pd.DataFrame, filename: str, table_type: str = "table") -> No
 
 
 def create_dim_player() -> pd.DataFrame:
-    """
-    Create dimension table for players by combining BOTH season and match stats.
-    This ensures ALL players are captured, including those only appearing in match data.
-    """
+
     print("Creating dim_player:")
     
     # SOURCE 1: Player SEASON stats (primary source with birth year)
@@ -272,6 +269,7 @@ def create_fact_team_match() -> pd.DataFrame:
     
     df_team = pd.read_csv(os.path.join(DATA_PROCESSED_DIR, 'dim_team.csv'))
     df_match = pd.read_csv(os.path.join(DATA_PROCESSED_DIR, 'dim_match.csv'))
+    df_player = pd.read_csv(os.path.join(DATA_PROCESSED_DIR, 'dim_player.csv'))
     
     # CHUẨN HÓA CHUỖI (rất quan trọng)
     df['team'] = df['team'].astype(str).str.strip().str.lower()
@@ -279,6 +277,9 @@ def create_fact_team_match() -> pd.DataFrame:
     
     df['game'] = df['game'].astype(str).str.strip().str.lower()
     df_match['game'] = df_match['game'].astype(str).str.strip().str.lower()
+    
+    df['Captain'] = df['Captain'].astype(str).str.strip().str.lower()
+    df_player['player'] = df_player['player'].astype(str).str.strip().str.lower()
     
     df['opponent'] = df['opponent'].astype(str).str.strip().str.lower()
     
@@ -310,6 +311,16 @@ def create_fact_team_match() -> pd.DataFrame:
     
     df['team'] = df['team'].apply(clean_team_name)
     df['opponent'] = df['opponent'].apply(clean_team_name)
+
+    # Map Captain → captain_id
+    df = df.merge(
+        df_player[['player_id', 'player']],
+        left_on='Captain',
+        right_on='player',
+        how='left'
+    )
+    df.rename(columns={'player_id': 'captain_id'}, inplace=True)
+    df.drop(columns=['player'], inplace=True)
     
     # MAP TEAM → team_id
     df = df.merge(
@@ -361,6 +372,7 @@ def create_fact_team_match() -> pd.DataFrame:
         'xG',
         'xGA',
         'Poss',
+        'captain_id',
         'Formation',
         'Opp Formation',
     ]]
