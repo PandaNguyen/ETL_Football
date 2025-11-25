@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETL Architecture Diagram</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @keyframes dash-flow {
+            to { stroke-dashoffset: -12; }
+        }
+        .animate-dash-flow {
+            animation: dash-flow 1s linear infinite;
+        }
+        body {
+            background-color: #f8fafc;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="p-8 flex justify-center items-center min-h-screen">
+
+    <div class="bg-slate-50 p-8 rounded-xl shadow-xl overflow-x-auto">
+        <div id="diagram-container" class="relative min-w-[1450px] h-[650px] bg-white rounded-lg border border-slate-200 overflow-hidden">
+            </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // 🛠️ CẤU HÌNH & DỮ LIỆU
+        // ============================================================================
+        const TOOL_LOGOS = {
+            fbref: "https://cdn.ssref.net/req/202511201/logos/fb-logo.svg",
+            flashscore: "https://play-lh.googleusercontent.com/n1967lmhllJa2Tvp36LzUtjz3D0-nZIgCtMaSy4setMWKACpWeTPQHSFvS_MCEvYh-0shBitSZ0XfLJYQVD9cA=w240-h480-rw",
+            airflow: "https://upload.wikimedia.org/wikipedia/commons/d/de/AirflowLogo.png",
+            python: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg",
+            postgres: "https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg",
+            streamlit: "https://streamlit.io/images/brand/streamlit-mark-color.png",
+        };
+
+        const Y_START = 100;
+        const Y_GAP = 120;
+        const X_LAYERS = { source: 80, docker_bg: 280, orchestrator: 380, scripts: 620, storage: 900, viz: 1150 };
+
+        const POS = {
+            fbref: { x: X_LAYERS.source, y: Y_START },
+            flashscore: { x: X_LAYERS.source, y: Y_START + Y_GAP },
+            airflow: { x: X_LAYERS.orchestrator, y: Y_START + Y_GAP/2 + 60 },
+            extract: { x: X_LAYERS.scripts, y: Y_START },
+            transform: { x: X_LAYERS.scripts, y: Y_START + Y_GAP },
+            load: { x: X_LAYERS.scripts, y: Y_START + Y_GAP * 2 },
+            raw: { x: X_LAYERS.storage, y: Y_START },
+            processed: { x: X_LAYERS.storage, y: Y_START + Y_GAP },
+            db: { x: X_LAYERS.storage, y: Y_START + Y_GAP * 2 },
+            streamlit: { x: X_LAYERS.viz, y: Y_START + Y_GAP * 1.5 },
+            user: { x: X_LAYERS.viz + 40, y: Y_START + Y_GAP * 2.5 }
+        };
+
+        // ============================================================================
+        // HELPER FUNCTIONS
+        // ============================================================================
+
+        function getStyles(colorType) {
+            const styles = {
+                blue: "border-blue-500 bg-blue-50 text-blue-700",
+                green: "border-emerald-500 bg-emerald-50 text-emerald-700",
+                orange: "border-orange-500 bg-orange-50 text-orange-700",
+                purple: "border-purple-500 bg-purple-50 text-purple-700",
+                red: "border-rose-500 bg-rose-50 text-rose-700",
+                slate: "border-slate-400 bg-white text-slate-700",
+            };
+            const iconColors = {
+                blue: "text-blue-500", green: "text-emerald-500", orange: "text-orange-500",
+                purple: "text-purple-500", red: "text-rose-500", slate: "text-slate-500",
+            };
+            return { card: styles[colorType] || styles.slate, icon: iconColors[colorType] || iconColors.slate };
+        }
+
+        function renderNode({ label, subLabel, iconName, logoUrl, colorType = "default", x, y, logoClass = "h-8 w-auto" }) {
+            const style = getStyles(colorType);
+            const content = logoUrl 
+                ? `<img src="${logoUrl}" alt="${label}" class="${logoClass} mb-2 object-contain" />`
+                : `<i data-lucide="${iconName}" class="mb-2 ${style.icon}" width="24" height="24"></i>`;
+
+            return `
+                <div style="position: absolute; left: ${x}px; top: ${y}px;">
+                    <div class="relative z-10 flex flex-col items-center justify-center p-3 w-44 border-2 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-white ${style.card}">
+                        ${content}
+                        <div class="font-bold text-sm text-center leading-tight">${label}</div>
+                        ${subLabel ? `<div class="text-[10px] opacity-75 mt-1 text-center font-medium">${subLabel}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDatabaseNode({ label, logoUrl, x, y }) {
+            return `
+                <div style="position: absolute; left: ${x}px; top: ${y}px;">
+                    <div class="relative z-10 flex flex-col items-center w-40 group">
+                        <div class="relative w-24 h-24 transition-transform group-hover:scale-105">
+                            <svg viewBox="0 0 100 100" class="drop-shadow-md overflow-visible w-full h-full">
+                                <ellipse cx="50" cy="20" rx="35" ry="10" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+                                <path d="M15,20 v50 a35,10 0 0,0 70,0 v-50" fill="#60a5fa" stroke="#1d4ed8" stroke-width="2"/>
+                                <ellipse cx="50" cy="20" rx="35" ry="10" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-opacity="0.2"/>
+                                <path d="M15,35 a35,10 0 0,0 70,0" fill="none" stroke="#1d4ed8" stroke-width="1" stroke-opacity="0.5"/>
+                                <path d="M15,50 a35,10 0 0,0 70,0" fill="none" stroke="#1d4ed8" stroke-width="1" stroke-opacity="0.5"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center pt-2">
+                                <div class="bg-white p-1 rounded-full shadow-sm">
+                                    <img src="${logoUrl}" alt="DB" class="w-6 h-6 object-contain" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-[-10px] bg-white px-3 py-1 border border-blue-200 rounded text-xs font-bold text-blue-800 shadow-sm text-center z-20">
+                            ${label}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderConnection({ start, end, dashed = false, color = "slate", speed = "normal" }) {
+            const pathData = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+            const colors = {
+                slate: { stroke: "#cbd5e1", active: "#64748b" },
+                purple: { stroke: "#e9d5ff", active: "#a855f7" },
+                blue: { stroke: "#bfdbfe", active: "#3b82f6" },
+            };
+            const theme = colors[color] || colors.slate;
+            const duration = speed === "fast" ? "1s" : speed === "slow" ? "3s" : "2s";
+            const pathId = `path-${start.x}-${start.y}-${end.x}-${end.y}`.replace(/\./g, '-');
+
+            let extraElements = '';
+            if (dashed) {
+                extraElements = `
+                    <path d="${pathData}" fill="none" stroke="${theme.active}" stroke-width="2" stroke-dasharray="6,6">
+                        <animate attributeName="stroke-dashoffset" from="12" to="0" dur="1s" repeatCount="indefinite" />
+                    </path>
+                `;
+            } else {
+                extraElements = `
+                    <path d="${pathData}" fill="none" stroke="${theme.active}" stroke-width="2" />
+                    <circle r="4" fill="${theme.active}">
+                        <animateMotion dur="${duration}" repeatCount="indefinite"><mpath href="#${pathId}" /></animateMotion>
+                    </circle>
+                    <circle r="2" fill="${theme.active}" opacity="0.6">
+                        <animateMotion dur="${duration}" repeatCount="indefinite" begin="0.1s"><mpath href="#${pathId}" /></animateMotion>
+                    </circle>
+                `;
+            }
+
+            return `
+                <g>
+                    <defs><path id="${pathId}" d="${pathData}" /></defs>
+                    <path d="${pathData}" fill="none" stroke="${theme.stroke}" stroke-width="4" stroke-linecap="round" />
+                    ${extraElements}
+                </g>
+            `;
+        }
+
+        function renderUserNode({ x, y }) {
+             return `
+                <div style="position: absolute; left: ${x}px; top: ${y}px;">
+                    <div class="flex flex-col items-center">
+                        <i data-lucide="user" class="text-slate-600 mb-1" width="32" height="32"></i>
+                        <span class="text-sm font-bold text-slate-600">End User</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================================================
+        // MAIN RENDER
+        // ============================================================================
+        const container = document.getElementById('diagram-container');
+        let html = '';
+
+        const connections = [
+            { start: {x: POS.fbref.x + 88, y: POS.fbref.y + 40}, end: {x: POS.extract.x, y: POS.extract.y + 40}, color: "blue" },
+            { start: {x: POS.flashscore.x + 88, y: POS.flashscore.y + 40}, end: {x: POS.extract.x, y: POS.extract.y + 40}, color: "blue" },
+            { start: {x: POS.airflow.x + 88, y: POS.airflow.y + 40}, end: {x: POS.extract.x, y: POS.extract.y + 40}, dashed: true, color: "purple", speed: "fast" },
+            { start: {x: POS.airflow.x + 88, y: POS.airflow.y + 40}, end: {x: POS.transform.x, y: POS.transform.y + 40}, dashed: true, color: "purple", speed: "fast" },
+            { start: {x: POS.airflow.x + 88, y: POS.airflow.y + 40}, end: {x: POS.load.x, y: POS.load.y + 40}, dashed: true, color: "purple", speed: "fast" },
+            { start: {x: POS.extract.x + 88, y: POS.extract.y + 40}, end: {x: POS.raw.x, y: POS.raw.y + 40}, color: "slate", speed: "fast" },
+            { start: {x: POS.raw.x, y: POS.raw.y + 60}, end: {x: POS.transform.x + 88, y: POS.transform.y + 20}, dashed: true, color: "slate" },
+            { start: {x: POS.transform.x + 88, y: POS.transform.y + 40}, end: {x: POS.processed.x, y: POS.processed.y + 40}, color: "slate", speed: "fast" },
+            { start: {x: POS.processed.x, y: POS.processed.y + 60}, end: {x: POS.load.x + 88, y: POS.load.y + 20}, dashed: true, color: "slate" },
+            { start: {x: POS.load.x + 88, y: POS.load.y + 40}, end: {x: POS.db.x + 35, y: POS.db.y + 40}, color: "blue", speed: "fast" },
+            { start: {x: POS.db.x + 80, y: POS.db.y + 40}, end: {x: POS.streamlit.x, y: POS.streamlit.y + 40}, color: "blue", speed: "slow" },
+            { start: {x: POS.user.x + 40, y: POS.user.y}, end: {x: POS.streamlit.x + 40, y: POS.streamlit.y + 80}, dashed: true, color: "slate", speed: "slow" }
+        ];
+
+        let svgContent = connections.map(renderConnection).join('');
+        html += `<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">${svgContent}</svg>`;
+
+        html += `
+            <div class="absolute border-2 border-dashed border-blue-200 bg-blue-50/50 rounded-2xl z-0" style="left: ${X_LAYERS.source - 20}px; top: 40px; width: 220px; height: 300px;">
+                <div class="absolute -top-3 left-6 bg-white px-2 border border-blue-100 rounded text-blue-500 font-bold text-sm flex items-center gap-2">Data Sources</div>
+            </div>
+            <div class="absolute border-2 border-dashed border-indigo-200 bg-indigo-50/50 rounded-2xl z-0" style="left: ${X_LAYERS.docker_bg}px; top: 40px; width: 1080px; height: 520px;">
+                <div class="absolute -top-3 left-6 bg-white px-2 border border-indigo-100 rounded text-indigo-400 font-bold text-sm flex items-center gap-2">Docker Infrastructure (Compose)</div>
+            </div>
+        `;
+
+        html += renderNode({ label: "FBref API", subLabel: "soccerdata", logoUrl: TOOL_LOGOS.fbref, colorType: "blue", logoClass: "h-12 w-auto", ...POS.fbref });
+        html += renderNode({ label: "Flashscore", subLabel: "Selenium", logoUrl: TOOL_LOGOS.flashscore, colorType: "blue", ...POS.flashscore });
+        html += renderNode({ label: "Apache Airflow", subLabel: "Scheduler", logoUrl: TOOL_LOGOS.airflow, colorType: "purple", ...POS.airflow });
+        
+        html += renderNode({ label: "Extract.py", subLabel: "Fetch & Merge", logoUrl: TOOL_LOGOS.python, colorType: "orange", ...POS.extract });
+        html += renderNode({ label: "Transform.py", subLabel: "Clean & Dim/Fact", logoUrl: TOOL_LOGOS.python, colorType: "orange", ...POS.transform });
+        html += renderNode({ label: "Load.py", subLabel: "Upsert to DB", logoUrl: TOOL_LOGOS.python, colorType: "orange", ...POS.load });
+
+        html += renderNode({ label: "Raw Data", subLabel: "/data_raw (CSV)", iconName: "file-text", colorType: "slate", ...POS.raw });
+        html += renderNode({ label: "Processed Data", subLabel: "/data_processed (CSV)", iconName: "file-text", colorType: "slate", ...POS.processed });
+
+        html += renderDatabaseNode({ label: "PostgreSQL", logoUrl: TOOL_LOGOS.postgres, ...POS.db });
+
+        html += renderNode({ label: "Streamlit", subLabel: "Dashboard UI", logoUrl: TOOL_LOGOS.streamlit, colorType: "red", ...POS.streamlit });
+        
+        html += renderUserNode({ ...POS.user });
+
+        container.innerHTML = html;
+        lucide.createIcons();
+    </script>
+</body>
+</html>
